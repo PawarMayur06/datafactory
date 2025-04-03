@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    needs: build
+    runs-on: ubuntu:latest
+    environment: DEV
+    steps:
+      - name: Download the Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ExportedArmTemplate
+
+      - name: Login via Az module
+        uses: Azure/login@v2.2.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+
+      - name: Run PreDeploymentScript
+        shell: pwsh
+        run: |
+          sudo pwsh -Command ./PrePostDeploymentScript.ps1 
+            -armTemplate "./ARMTemplateForFactory.json" 
+            -armTemplateParameters "./ARMTemplateParametersForFactory.json" 
+            -ResourceGroupName "mayurr-rg" 
+            -DataFactoryName "prod-adf-mayurr" 
+            -predeployment 1 
+            -deleteDeployment 0
+
+      - name: Deploy Azure Resource Manager (ARM) Template
+        uses: Azure/arm-deploy@v1.0.6
+        with:
+          scope: 'resourcegroup'
+          resourceGroupName: 'mayurr-rg'
+          template: ./ARMTemplateForFactory.json
+          deploymentMode: Incremental
+          parameters: > 
+            ./ARMTemplateParametersForFactory.json
+            factoryName=mayurr-prod-adf
+            AzureKeyVault1_properties_typeProperties_baseUrl=https://mayurrprodadfkv.vault.azure.net/
+
+      - name: Run Post-deployment script
+        shell: pwsh
+        run: sudo pwsh -command "./PrePostDeploymentScript.ps1 -armTemplate ./ARMTemplateForFactory.json -armTemplateParameters ./ARMTemplateParametersForFactory.json -ResourceGroupName mayurr-rg -DataFactoryName prod-adf-mayurr -predeployment 0 -deleteDeployment 0"
