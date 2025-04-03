@@ -1,1 +1,45 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu:latest
+    environment: DEV
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: 18.x
+
+      - name: Install ADF Utilities package
+        run: npm install
+        working-directory: ${{ github.workspace }}/
+
+      - name: Validate
+        run: npm run build validate ${{ github.workspace }}/ /subscriptions/7133afd3-c71c-4f13-9320-ab6f3543c8c2/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/dev-adf-mayurr
+        working-directory: ${{ github.workspace }}/
+
+      - name: Validate and Generate ARM template
+        run: npm run build export ${{ github.workspace }}/ /subscriptions/7133afd3-c71c-4f13-9320-ab6f3543c8c2/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/dev-adf-mayurr "ExportedArmTemplate"
+        working-directory: ${{ github.workspace }}/
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          find ${{github.workspace}}/ADFroot -name "*.json" -o -name "*.ps1" | while read file; do git add "$file"; done
+          git commit -m "Update ARM templates [skip ci]" || echo "No changes to commit"
+          git push origin main || echo "No changes to push"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ExportedArmTemplate
+          path: ${{ github.workspace }}/ExportedArmTemplate
 
