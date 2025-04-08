@@ -9,10 +9,18 @@ jobs:
     runs-on: ubuntu-24.04
     environment: DEV
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ExportedArmTemplate
+
+      # - name: Download a Build Artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: ExportedArmTemplate
+
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      
+      - name: Copy the artifact
+        run: |
+          cp -r ExportedArmTemplate/ ${{ github.workspace }}/ExportedArmTemplate
           
       - name: Login via Az module
         uses: Azure/login@v2.2.0
