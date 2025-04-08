@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "mayurr-adf-dev"
+        },
+        "Lakehouse1_servicePrincipalCredential": {
+            "value": ""
+        },
+        "Warehouse1_servicePrincipalCredential": {
+            "value": ""
+        },
+        "AzureBlobStorage1_properties_typeProperties_connectionString_secretName": {
+            "value": "dev-sa-cs"
+        },
+        "AzureKeyVault1_properties_typeProperties_baseUrl": {
+            "value": "https://devadfkvmayurr.vault.azure.net/"
+        },
+        "Lakehouse1_properties_typeProperties_tenant": {
+            "value": "e4e34038-ea1f-4882-b6e8-ccd776459ca0"
+        },
+        "Lakehouse1_properties_typeProperties_servicePrincipalId": {
+            "value": "246cfd43-77c5-4c63-8f77-d6a19a3876ec"
+        },
+        "Warehouse1_properties_typeProperties_endpoint": {
+            "value": "hbaohza75kbernxiztlxmrm4ua-waebkxkc6ime7ikjg76bbb6rgq.datawarehouse.fabric.microsoft.com"
+        },
+        "Warehouse1_properties_typeProperties_tenant": {
+            "value": "e4e34038-ea1f-4882-b6e8-ccd776459ca0"
+        },
+        "Warehouse1_properties_typeProperties_servicePrincipalId": {
+            "value": "246cfd43-77c5-4c63-8f77-d6a19a3876ec"
+        }
+    }
+}

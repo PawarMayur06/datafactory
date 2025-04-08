@@ -1,0 +1,131 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "mayurr-adf-dev"
+        },
+        "Lakehouse1_servicePrincipalCredential": {
+            "type": "secureString",
+            "metadata": "Secure string for 'servicePrincipalCredential' of 'Lakehouse1'"
+        },
+        "Warehouse1_servicePrincipalCredential": {
+            "type": "secureString",
+            "metadata": "Secure string for 'servicePrincipalCredential' of 'Warehouse1'"
+        },
+        "AzureBlobStorage1_properties_typeProperties_connectionString_secretName": {
+            "type": "string",
+            "defaultValue": "dev-sa-cs"
+        },
+        "AzureKeyVault1_properties_typeProperties_baseUrl": {
+            "type": "string",
+            "defaultValue": "https://devadfkvmayurr.vault.azure.net/"
+        },
+        "Lakehouse1_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "e4e34038-ea1f-4882-b6e8-ccd776459ca0"
+        },
+        "Lakehouse1_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "246cfd43-77c5-4c63-8f77-d6a19a3876ec"
+        },
+        "Warehouse1_properties_typeProperties_endpoint": {
+            "type": "string",
+            "defaultValue": "hbaohza75kbernxiztlxmrm4ua-waebkxkc6ime7ikjg76bbb6rgq.datawarehouse.fabric.microsoft.com"
+        },
+        "Warehouse1_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "e4e34038-ea1f-4882-b6e8-ccd776459ca0"
+        },
+        "Warehouse1_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "246cfd43-77c5-4c63-8f77-d6a19a3876ec"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVault1",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "[parameters('AzureBlobStorage1_properties_typeProperties_connectionString_secretName')]",
+                        "secretVersion": "a20b3ce9c49b4dc58e9e0efee90ec7b4"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Lakehouse1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "Lakehouse",
+                "typeProperties": {
+                    "workspaceId": "5d1508b0-f242-4f18-a149-37fc1087d134",
+                    "artifactId": "1f3463c6-4b2f-4fce-8332-9c414a33d878",
+                    "tenant": "[parameters('Lakehouse1_properties_typeProperties_tenant')]",
+                    "servicePrincipalId": "[parameters('Lakehouse1_properties_typeProperties_servicePrincipalId')]",
+                    "servicePrincipalCredentialType": "ServicePrincipalKey",
+                    "servicePrincipalCredential": {
+                        "type": "SecureString",
+                        "value": "[parameters('Lakehouse1_servicePrincipalCredential')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Warehouse1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "Warehouse",
+                "typeProperties": {
+                    "endpoint": "[parameters('Warehouse1_properties_typeProperties_endpoint')]",
+                    "artifactId": "cbc6cf69-cbd7-47f9-9c0a-8a29c0ac0dd3",
+                    "workspaceId": "5d1508b0-f242-4f18-a149-37fc1087d134",
+                    "tenant": "[parameters('Warehouse1_properties_typeProperties_tenant')]",
+                    "servicePrincipalCredentialType": "ServicePrincipalKey",
+                    "servicePrincipalId": "[parameters('Warehouse1_properties_typeProperties_servicePrincipalId')]",
+                    "servicePrincipalCredential": {
+                        "type": "SecureString",
+                        "value": "[parameters('Warehouse1_servicePrincipalCredential')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
