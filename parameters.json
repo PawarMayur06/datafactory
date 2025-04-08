@@ -1,0 +1,6 @@
+{
+  "AzureKeyVault1_properties_typeProperties_baseUrl": "https://prodadfkvmayurr.vault.azure.net/",
+  "AzureBlobStorage1_properties_typeProperties_connectionString_secretName": "prod-sa-cs",
+  "Lakehouse1_servicePrincipalCredential": "${{ secrets.SP_SECRET }}",
+  "Warehouse1_servicePrincipalCredential": "${{ secrets.SP_SECRET }}"
+}
