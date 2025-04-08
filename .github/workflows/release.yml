@@ -15,12 +15,12 @@ jobs:
       #   with:
       #     name: ExportedArmTemplate
 
-      - name: Checkout the repository
-        uses: actions/checkout@v3
+      # - name: Checkout the repository
+      #   uses: actions/checkout@v3
       
-      - name: Copy the artifact
-        run: |
-          cp -r ExportedArmTemplate/ ${{ github.workspace }}/ExportedArmTemplate
+      # - name: Copy the artifact
+      #   run: |
+      #     cp -r ExportedArmTemplate/ ${{ github.workspace }}/ExportedArmTemplate
           
       - name: Login via Az module
         uses: Azure/login@v2.2.0
