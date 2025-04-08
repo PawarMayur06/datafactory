@@ -12,18 +12,20 @@ jobs:
   build:
     runs-on: self-hosted
     environment: DEV
-    
+
     steps:
+    
       - uses: actions/checkout@v3
       
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.4.1
         with:
           node-version: 18.x
-
-      - name: Install ADF Utilities package
+          
+      - name: install ADF Utilities package
         run: npm install
-        working-directory: ${{ github.workspace }}/
+        working-directory: ${{github.workspace}}/
+      
         
       - name: Validate
         run: npm run build validate ${{github.workspace}}/ /subscriptions/0d3ce63c-abaa-48ae-bbe1-f582cea576b9/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-adf-dev
@@ -43,9 +45,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       
-      - name: Upload Exported ARM Template
-        uses: actions/upload-artifact@v3.1.0
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: ExportedArmTemplate
-          path: ${{github.workspace}}/ExportedArmTemplate/      
+          name: ExportedArmTemplate 
+          path: ${{github.workspace}}/ExportedArmTemplate  
   
