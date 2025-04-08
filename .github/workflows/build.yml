@@ -26,11 +26,11 @@ jobs:
         working-directory: ${{ github.workspace }}/
         
       - name: Validate
-        run: npm run build validate ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/rg-shruti/providers/Microsoft.DataFactory/factories/adf-shir-shruti
+        run: npm run build validate ${{github.workspace}}/ /subscriptions/0d3ce63c-abaa-48ae-bbe1-f582cea576b9/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-adf-dev
         working-directory: ${{github.workspace}}/
         
       - name: Validate and Generate ARM template
-        run: npm run build export ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/rg-shruti/providers/Microsoft.DataFactory/factories/adf-shir-shruti "ExportedArmTemplate"
+        run: npm run build export ${{github.workspace}}/ /subscriptions/0d3ce63c-abaa-48ae-bbe1-f582cea576b9/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-adf-dev "ExportedArmTemplate"
         working-directory: ${{github.workspace}}/
         
       - name: Commit and push changes
