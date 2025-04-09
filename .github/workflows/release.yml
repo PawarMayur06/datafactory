@@ -28,11 +28,11 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
 
-      - name: Read parameters from JSON file and pass to additionalParameters
-        id: read-params
-        run: |
-          additional_params=$(jq -c . /parameters.json)
-          echo "additionalParams=$additional_params" >> $GITHUB_ENV
+      # - name: Read parameters from JSON file and pass to additionalParameters
+      #   id: read-params
+      #   run: |
+      #     additional_params=$(jq -c . /parameters.json)
+      #     echo "additionalParams=$additional_params" >> $GITHUB_ENV
 
       - name: data-factory-deploy
         uses: Azure/data-factory-deploy-action@v1.2.0
@@ -41,4 +41,4 @@ jobs:
           dataFactoryName: mayurr-prod-adf
           armTemplateFile: ARMTemplateForFactory.json
           armTemplateParametersFile: ARMTemplateParametersForFactory.json
-          additionalParameters: ${{ env.additionalParams }}
+          additionalParameters: 'AzureBlobStorage1_properties_typeProperties_connectionString_secretName=prod-sa-cs AzureKeyVault1_properties_typeProperties_baseUrl=https://prodadfkvmayurr.vault.azure.net/'
