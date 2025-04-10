@@ -1,93 +1,39 @@
-name: Build Pipeline
-
+name: Dev to Prod
+ 
 on:
   workflow_dispatch:
-  
-permissions:
-  id-token: write
-  contents: write
-  actions: read
   
 jobs:
   build:
     runs-on: self-hosted
     environment: DEV
-
     steps:
-    
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.4.1
-        with:
-          node-version: 18.x
-          
-      - name: install ADF Utilities package
-        run: npm install
-        working-directory: ${{github.workspace}}/
-      
-        
-      - name: Validate
-        run: npm run build validate ${{github.workspace}}/ /subscriptions/0d3ce63c-abaa-48ae-bbe1-f582cea576b9/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-adf-dev
-        working-directory: ${{github.workspace}}/
-        
-      - name: Validate and Generate ARM template
-        run: npm run build export ${{github.workspace}}/ /subscriptions/0d3ce63c-abaa-48ae-bbe1-f582cea576b9/resourceGroups/mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-adf-dev "ExportedArmTemplate"
-        working-directory: ${{github.workspace}}/
-        
-      - name: Commit and push changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          # find ${{github.workspace}}/ -name "*.json" -o -name "*.ps1" | while read file; do git add "$file"; done
-          git add ExportedArmTemplate/
-          git commit -m "Update ARM templates [skip ci]" || echo "No changes to commit"
-          git push origin main || echo "No changes to push"
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ExportedArmTemplate 
-          path: ${{github.workspace}}/ExportedArmTemplate  
-  
-# name: Dev to Prod
  
-# on:
-#   workflow_dispatch:
-  
-# jobs:
-#   build:
-#     runs-on: self-hosted
-#     environment: DEV
-#     steps:
- 
-#     - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
     
-#     - name: Setup Node.js environment
-#       uses: actions/setup-node@v3.4.1
-#       with:
-#         node-version: 18.x
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3.4.1
+      with:
+        node-version: 18.x
         
-#     - name: install ADF Utilities package
-#       run: npm install
-#       working-directory: ${{github.workspace}}/
+    - name: install ADF Utilities package
+      run: npm install
+      working-directory: ${{github.workspace}}/
       
-#     - name: Validate
-#       run: npm run build validate ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/Mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-dev-adf
-#       working-directory: ${{github.workspace}}/
+    - name: Validate
+      run: npm run build validate ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/Mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-dev-adf
+      working-directory: ${{github.workspace}}/
 
  
-#     - name: Validate and Generate ARM template
-#       run: npm run build export ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/Mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-dev-adf "ExportedArmTemplate" 
-#       working-directory: ${{github.workspace}}/
+    - name: Validate and Generate ARM template
+      run: npm run build export ${{github.workspace}}/ /subscriptions/737d1672-96a9-4ba4-b12c-8027ef27ab4e/resourceGroups/Mayurr-rg/providers/Microsoft.DataFactory/factories/mayurr-dev-adf "ExportedArmTemplate" 
+      working-directory: ${{github.workspace}}/
 
-#     - name: upload artifact
-#       uses: actions/upload-artifact@v4
-#       with:
-#         name: ExportedArmTemplate 
-#         path: ${{github.workspace}}/ExportedArmTemplate
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ExportedArmTemplate 
+        path: ${{github.workspace}}/ExportedArmTemplate
  
   release:
     needs: build
@@ -98,10 +44,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ExportedArmTemplate
-
-      # - name: Install Azure PowerShell modules
-      #   run: |
-      #     pwsh -Command 'Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser'
           
       - name: Login via Az module
         uses: Azure/login@v2.2.0
@@ -116,4 +58,4 @@ jobs:
           dataFactoryName: mayurr-prod-adf
           armTemplateFile: ARMTemplateForFactory.json
           armTemplateParametersFile: ARMTemplateParametersForFactory.json
-          additionalParameters: 'AzureBlobStorage1_properties_typeProperties_connectionString_secretName=prod-sa-cs AzureKeyVault1_properties_typeProperties_baseUrl=https://prodadfkvmayurr.vault.azure.net/'
+          additionalParameters: 'AzureKeyVault1_properties_typeProperties_baseUrl=https://mayurrprodadfkv.vault.azure.net/ default_properties_name_value=Dinesh'
